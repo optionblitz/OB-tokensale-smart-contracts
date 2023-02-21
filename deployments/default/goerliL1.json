@@ -1,0 +1,19 @@
+{
+  "chainId": 5,
+  "deploymentDate": 1676146090739,
+  "startBlock": 8475352,
+  "totalGasUsed": 8570137,
+  "addresses": {
+    "USDC": "0x66578bD1980616F83992F1edaB97FA21433d39Ac",
+    "BlxToken": "0x0502F0fd4Be7854b5749328f7e3DD013B94e858E",
+    "Multicall": "0x77dca2c955b15e9de4dbbcf1246b4b85b651e50e",
+    "Multicall2": "0x5ba1e12693dc8f9c48aad8770482f4739beed696",
+    "Forwarder": "0xE041608922d06a4F26C0d4c27d8bCD01daf1f792",
+    "BlxPresale": "0xb25A3e9FDC0a8a2af0E27A959112be76C51660e3",
+    "IBCO": "0x315A47d26f3D9d1d9dE8cEc00B5851bB44D10F78",
+    "TokenSale": "0x9804B8abdD74F883b82A85b988195EbF5a5d4C15",
+    "TokenVesting": "0xfE29cBECBC3f8CE5707eC078Da8fD5ee7E6e12A3",
+    "TokenVestingFactory": "0x1b4a039C1681aA2F9B22A0F487D8beBBc2B9099F"
+  },
+  "network": "goerli"
+}

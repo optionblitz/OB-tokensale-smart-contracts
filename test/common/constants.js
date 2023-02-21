@@ -1,0 +1,7 @@
+const SECONDS_PER_DAY = 86400;
+const SECONDS_PER_WEEK = 7*SECONDS_PER_DAY;
+
+module.exports = {
+    SECONDS_PER_DAY,
+    SECONDS_PER_WEEK
+}
