@@ -101,6 +101,7 @@ contract BlxPresale is IBlxPresale, ERC2771Context, AccessContract, Initializabl
     constructor (address trustedForwarder, address _usdcAddress, address _blxAddress, address _tokenSaleAddress) ERC2771Context(trustedForwarder) {
         require(_usdcAddress != address(0), "PRESALE:USDC_ADDRESS_ZERO");
         require(_blxAddress != address(0), "PRESALE:BLX_ADDRESS_ZERO");
+        require(_tokenSaleAddress != address(0), "PRESALE:TOKENSALE_ADDRESS_ZERO");
 
         USDC = IERC20(_usdcAddress);
         BLX = IBlxToken(_blxAddress);
@@ -121,6 +122,7 @@ contract BlxPresale is IBlxPresale, ERC2771Context, AccessContract, Initializabl
         initializer
     {
         require(_daoAgentAddress != address(0), "PRESALE:DAO_AGENT_ADDRESS_ZERO");
+        require(_ibcoAddress != address(0), "PRESALE:IBCO_ADDRESS_ZERO");
         require(amountFromWhitelisted == 0, "PRESALE:ALREADY_STARTED");
         daoAgentAddress = _daoAgentAddress;
         ibcoAddress = _ibcoAddress;
@@ -140,7 +142,7 @@ contract BlxPresale is IBlxPresale, ERC2771Context, AccessContract, Initializabl
     function start() external onlyTrustedCaller {
         require(presaleEnd == 0, "PRESALE:ALREADY_STARTED");
         // need sufficient BLX to full sale AND reward(for presale stage) 
-        uint requiredBLX = hardCap * 10 + hardCap;
+        uint requiredBLX = hardCap * blxRate + hardCap; // hardCap(in USDC) * 10 + rewards(10% of BLX hardCap) 
         uint chainid = block.chainid;
         require(BLX.balanceOf(address(this)) >= requiredBLX || (chainid != 1 && chainid != 31337) , "PRESALE:NEED_BLX");
         presaleActive = true;
@@ -160,7 +162,24 @@ contract BlxPresale is IBlxPresale, ERC2771Context, AccessContract, Initializabl
     function setTxCost(uint amount) external onlyTrustedCaller {
         txCost = amount;
     }
-    /// @dev returns true if soft cap reached, false otherwice
+    /// @dev set ibco address
+    /// @param _ibcoAddress IBCO contract address
+    /// only if current ibco address is empty or not started
+    /// used in case IBCO condition changed after presale stage
+    function setIBCO(address _ibcoAddress) external onlyTrustedCaller {
+        require(ibcoAddress == address(0) || IIBCO(ibcoAddress).ibcoEnd() == 0, "PRESALE:IBCO_ALREADY_START");
+        require(_ibcoAddress != address(0) && IIBCO(_ibcoAddress).ibcoEnd() == 0, "PRESALE:ONLY_FRESH_IBCO");
+        ibcoAddress = _ibcoAddress;
+    }
+
+    /// @dev return BLX
+    /// only if not started, in cases there need to be logic revision BETFORE start(and BLX already deposited)
+    function returnBLX() external onlyTrustedCaller {
+        require(presaleEnd == 0, "PRESALE:ALREADY_START");
+        BLX.transfer(daoAgentAddress, BLX.balanceOf(address(this)));
+    }
+
+    /// @dev returns true if soft cap reached, false otherwise
     /// needed to allow IBCO start
     function presaleSoftCapStatus() external view returns(bool) {
         return softCapReached;

@@ -174,7 +174,7 @@ describe('IBCO sale', function () {
     });
 
     describe("Positive tests", async () => {
-        it('Admin can initialize presale start', async function () {
+        it('Admin can initialize sale start', async function () {
             let status = await ibco.ibcoActive();
             expect(status).to.be.equal(false);
 
@@ -182,6 +182,11 @@ describe('IBCO sale', function () {
             await startSale();
             status = await ibco.ibcoActive();
             expect(status).to.be.equal(true);
+        });
+
+        it('can return BLX if not started', async function () {
+            await blxToken.transfer(ibco.address, 30000000 * 1e6);
+            await ibco.returnBLX();
         });
 
         it('Can start after partial claim in presale including rewards', async function () {
@@ -1270,11 +1275,24 @@ describe('IBCO sale', function () {
                 .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
             await expect(ibco.connect(accounts[1]).setMinAmount(10000))
                 .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
+                await expect(ibco.connect(accounts[1]).returnBLX())
+                .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
             //Skip 28 days
             await increaseTime(IBCO_END);
             await expect(ibco.connect(accounts[1]).transferToDaoAgent())
                 .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
         });
+
+        it('cannot return BLX once started', async function () {
+            let amount = 20000 * 1e6;
+            await startSale();
+
+            //return BLX(should fail)
+            await expect(ibco.returnBLX())
+                .to.be.revertedWith("IBCO:ALREADY_START");
+
+        });
+
         it("can't refund if both presale and ibco goest through", async function () {
             let amount = 200000 * 1e6;
 

@@ -92,6 +92,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
     {
         require(_usdcAddress != address(0), "IBCO:USDC_ADDRESS_ZERO");
         require(_blxAddress != address(0), "IBCO:BLX_ADDRESS_ZERO");
+        require(_tokenSaleAddress != address(0), "IBCO:TOKENSALE_ADDRESS_ZERO");
 
         USDC = IERC20(_usdcAddress);
         BLX = IBlxToken(_blxAddress);
@@ -224,7 +225,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
         require(presaleBlxBal >= hardCap * 3 / 10  + presaleBlxObligation || !(chainid == 1 || chainid == 31337), "IBCO:NEED_REWARD_BLX");
 
         ibcoActive = true;
-        // use actual block timestamp(presaleStart is for indicative purpose before start)
+        // use actual block timestamp(ibcoStart is for indicative purpose before start)
         ibcoEnd = block.timestamp + duration;
         emit IBCOStart(ibcoEnd, duration, softCap, hardCap);
     }
@@ -242,6 +243,13 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
     /// @param amount USDC amount to enter in wei
     function setTxCost(uint amount) external onlyTrustedCaller {
         txCost = amount;
+    }
+
+    /// @dev return BLX
+    /// only if not started, in cases there need to be logic revision BETFORE start(and BLX already deposited)
+    function returnBLX() external onlyTrustedCaller {
+        require(ibcoEnd == 0, "IBCO:ALREADY_START");
+        BLX.transfer(presale.daoAgentAddress(), BLX.balanceOf(address(this)));
     }
     
     /// @dev receive USDC from users

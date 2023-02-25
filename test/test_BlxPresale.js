@@ -18,7 +18,7 @@ const HARD_CAP = 10000000 * 1e6; //10,000,000 USDC
 const MIN_AMOUNT = 1 * 1e6; //1 USDC
 
 describe('BLX Presale', function () {
-    let accounts, admin, kyc, usdToken, blxToken, blxPresale, ibco, getPresaleBalance, getIBCOBalance, forwarder, tokenSale, startPresale, startSale;
+    let accounts, admin, kyc, usdToken, blxToken, blxPresale, ibco, ibco1, getPresaleBalance, getIBCOBalance, forwarder, tokenSale, startPresale, startSale;
     beforeEach(async () => {
         accounts = await ethers.getSigners();
         admin = accounts[0];
@@ -52,6 +52,13 @@ describe('BLX Presale', function () {
             tokenSale.address
         );
 
+        ibco1 = await IBCO.deploy(
+            forwarder.address,
+            usdToken.address,
+            blxToken.address,
+            tokenSale.address
+        );
+
         await tokenSale.setAddresses(blxPresale.address, ibco.address);
 
         await blxPresale.config(
@@ -75,6 +82,16 @@ describe('BLX Presale', function () {
             Math.round(Date.now()/1000)
         );
 
+        await ibco1.config(
+            blxPresale.address,
+            admin.address,
+            admin.address,
+            IBCO_END,
+            SOFT_CAP,
+            HARD_CAP,
+            Math.round(Date.now()/1000)
+        );
+
         //give everyone 1M USD
         await accounts.forEach(async (u) => {
             await usdToken.mint(u.address, 1000000 * 1e6);
@@ -89,6 +106,7 @@ describe('BLX Presale', function () {
 
         await blxPresale.addTrustedAddress(admin.address);
         await ibco.addTrustedAddress(admin.address);
+        await ibco1.addTrustedAddress(admin.address);
 
         await blxPresale.setMinAmount(MIN_AMOUNT_PRESALE);
         await ibco.setMinAmount(MIN_AMOUNT);
@@ -438,6 +456,24 @@ describe('BLX Presale', function () {
             }
         });
 
+        it('Change ibco address after presale end, before ibco begin', async function () {
+            let amount = 20000 * 1e6;
+            await startPresale();
+
+            const referrer = accounts[1].address;
+            //console.log(`referrer ${referrer}`);
+            for (let i = 1; i < 15; i++) {
+                // 14 purchase
+                await blxPresale.connect(accounts[i]).enterPresale(amount, referrer);
+                //console.log(`Investor sent ${amount / 1e6} USDC`);
+            }
+
+            //Skip 28 days
+            await increaseTime(PRESALE_END);
+            //set IBCO address again
+            await blxPresale.setIBCO(ibco.address);
+        });
+
         it('Burn all remaining BLX after ibco sales end', async function () {
             let amount = 20000 * 1e6;
             await startPresale();
@@ -601,6 +637,12 @@ describe('BLX Presale', function () {
             // receive tx cost as part of the refund process
             expect((balance0).add(txCost.mul(2))).to.be.equal(await usdToken.balanceOf(daoAgentAddress));
         });
+
+        it('can return BLX if not started', async function () {
+            await blxToken.transfer(blxPresale.address, 30000000 * 1e6);
+            await blxPresale.returnBLX();
+        });
+
     })
     describe("Negative tests", async () => {
         it("Can't call purchase except tokensale contract", async function () {
@@ -767,6 +809,10 @@ describe('BLX Presale', function () {
                 .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
             await expect(blxPresale.connect(accounts[1]).setTxCost(1))
                 .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
+            await expect(blxPresale.connect(accounts[1]).setIBCO(ibco.address))
+                .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
+            await expect(blxPresale.connect(accounts[1]).returnBLX())
+                .to.be.revertedWith("AC:ADDRESS_IS_NOT_TRUSTED");
             //Skip 14 days
             await increaseTime(PRESALE_END);
             await expect(blxPresale.connect(accounts[1]).transferToDaoAgent())
@@ -806,6 +852,104 @@ describe('BLX Presale', function () {
             await expect(blxPresale.burnUnsoldBLX())
                 .to.be.revertedWith("PRESALE:NO_UNSOLD_BLX");
         });
+
+        it('cannot return BLX once started', async function () {
+            let amount = 20000 * 1e6;
+            await startPresale();
+
+            //return BLX(should fail)
+            await expect(blxPresale.returnBLX())
+                .to.be.revertedWith("PRESALE:ALREADY_START");
+
+        });
+
+        it('cannot change ibco address after presale end, when ibco already started', async function () {
+            let amount = 20000 * 1e6;
+            await startPresale();
+
+            const referrer = accounts[1].address;
+            //console.log(`referrer ${referrer}`);
+            for (let i = 1; i < 15; i++) {
+                // 14 purchase
+                await blxPresale.connect(accounts[i]).enterPresale(amount, referrer);
+                //console.log(`Investor sent ${amount / 1e6} USDC`);
+            }
+
+            //Skip 28 days
+            await increaseTime(PRESALE_END);
+
+            //start IBCO
+            await startSale();
+
+            //set IBCO address again(should fail)
+            await expect(blxPresale.setIBCO(ibco.address))
+                .to.be.revertedWith("PRESALE:IBCO_ALREADY_START");
+        });
+
+        it('cannot change ibco address after presale end, new ibco address empty', async function () {
+            let amount = 20000 * 1e6;
+            await startPresale();
+
+            const referrer = accounts[1].address;
+            //console.log(`referrer ${referrer}`);
+            for (let i = 1; i < 15; i++) {
+                // 14 purchase
+                await blxPresale.connect(accounts[i]).enterPresale(amount, referrer);
+                //console.log(`Investor sent ${amount / 1e6} USDC`);
+            }
+
+            //Skip 28 days
+            await increaseTime(PRESALE_END);
+
+            //set IBCO address to empty(should fail)
+            await expect(blxPresale.setIBCO(AddressZero))
+                .to.be.revertedWith("PRESALE:ONLY_FRESH_IBCO");
+        });
+
+        it('cannot change ibco address after presale end, non-ibco contract', async function () {
+            let amount = 20000 * 1e6;
+            await startPresale();
+
+            const referrer = accounts[1].address;
+            //console.log(`referrer ${referrer}`);
+            for (let i = 1; i < 15; i++) {
+                // 14 purchase
+                await blxPresale.connect(accounts[i]).enterPresale(amount, referrer);
+                //console.log(`Investor sent ${amount / 1e6} USDC`);
+            }
+
+            //Skip 28 days
+            await increaseTime(PRESALE_END);
+
+            //set IBCO address to wrong contract(should fail)
+            await expect(blxPresale.setIBCO(blxPresale.address))
+                .to.be.reverted;
+        });
+
+        it('cannot change ibco address after presale end, new ibco address already started', async function () {
+            let amount = 20000 * 1e6;
+            await startPresale();
+
+            const referrer = accounts[1].address;
+            //console.log(`referrer ${referrer}`);
+            for (let i = 1; i < 15; i++) {
+                // 14 purchase
+                await blxPresale.connect(accounts[i]).enterPresale(amount, referrer);
+                //console.log(`Investor sent ${amount / 1e6} USDC`);
+            }
+
+            //Skip 28 days
+            await increaseTime(PRESALE_END);
+
+            //ibco offering 30MM BLX
+            await blxToken.transfer(ibco1.address, 30000000 * 1e6);
+            await ibco1.start();
+
+            //set IBCO address to address that is already started(should fail)
+            await expect(blxPresale.setIBCO(ibco1.address))
+                .to.be.revertedWith("PRESALE:ONLY_FRESH_IBCO");
+        });
+
     });
 });
 
