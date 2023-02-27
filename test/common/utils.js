@@ -7,6 +7,10 @@ function increaseTime(time) {
   ethers.provider.send("evm_mine");
 }
 
+function alignBlockTimestamp(timestamp) {
+  ethers.provider.send("evm_setNextBlockTimestamp", [timestamp])
+}
+
 // don't use it in time dependent tests, it is not compatible with block.timestamp
 function currentTimestamp() {
     return Math.trunc(Date.now() / 1000);
@@ -35,5 +39,6 @@ module.exports = {
   currentTimestamp,
   latestBlockTimestamp,
   getRandomInt,
+  alignBlockTimestamp,
   parseUsdc
 }

@@ -70,6 +70,8 @@ describe('IBCO sale', function () {
 
         await tokenSale.setAddresses(blxPresale.address, ibco.address);
 
+        const currentTime = await latestBlockTimestamp();
+
         await blxPresale.config(
             presaleDaoAgent.address,
             ibco.address,
@@ -77,8 +79,8 @@ describe('IBCO sale', function () {
             ADD_TIME,
             SOFT_CAP_PRESALE,
             HARD_CAP_PRESALE,
-            Math.round(Date.now() / 1000)
-        );
+            currentTime + 1000
+            );
 
         await ibco.config(
             blxPresale.address,
@@ -87,8 +89,8 @@ describe('IBCO sale', function () {
             IBCO_END,
             SOFT_CAP,
             HARD_CAP,
-            Math.round(Date.now() / 1000)
-        );
+            currentTime + 1000
+            );
 
         //give everyone 1M USD
         await accounts.forEach(async (u) => {
@@ -159,14 +161,16 @@ describe('IBCO sale', function () {
 
         startSale = async () => {
             //ibco offering 30MM BLX
-            await blxToken.transfer(ibco.address, 30000000 * 1e6);
-            return ibco.start();
+            await blxToken.transfer(ibco.address, HARD_CAP * 3);
+            await ibco.start();
+            return increaseTime(1000);
         }
 
         startPresale = async () => {
             //presale offering 10MM BLX + max 10% total sale(10M + 30M) for rewards
             await blxToken.transfer(blxPresale.address, 10000000 * 1e6 + 4000000 * 1e6);
-            return blxPresale.start();
+            await blxPresale.start();
+            return increaseTime(1000);
         }
 
         getPresaleBalance();
@@ -194,6 +198,7 @@ describe('IBCO sale', function () {
             await blxToken.transfer(blxPresale.address, HARD_CAP_PRESALE * 10 + 4000000 * 1e6);
             //console.log((await blxToken.balanceOf(blxPresale.address)).toNumber());
             await blxPresale.start();
+            await increaseTime(1000);
             const referrer = accounts[0].address;
             let amount = 500000 * 1e6;
 
@@ -220,6 +225,7 @@ describe('IBCO sale', function () {
             await blxToken.transfer(blxPresale.address, HARD_CAP_PRESALE * 10 + 4000000 * 1e6);
             //console.log((await blxToken.balanceOf(blxPresale.address)).toNumber());
             await blxPresale.start();
+            await increaseTime(1000);
             const referrer = accounts[0].address;
             let amount = 500000 * 1e6;
 
@@ -1147,14 +1153,32 @@ describe('IBCO sale', function () {
                 .to.be.revertedWith("IBCO:ALREADY_STARTED");
         });
 
+        it("Can't purchase before start time", async function () {
+            let amount = 20000 * 1e6;
+            await blxToken.transfer(ibco.address, 30000000 * 1e6);
+            await blxToken.transfer(blxPresale.address, 3000000 * 1e6);
+            await ibco.start();
+            await expect(ibco.connect(accounts[0]).enterIbco(amount, amount, AddressZero))
+                .to.be.revertedWith("IBCO:IBCO_NOT_STARTED");
+        });
+
+        it("Can't purchase before activate", async function () {
+            let amount = 20000 * 1e6;
+            await increaseTime(2000);
+            await expect(ibco.connect(accounts[0]).enterIbco(amount, amount, AddressZero))
+                .to.be.revertedWith("IBCO:IBCO_NOT_STARTED");
+        });
+
         it("Can't start without enough BLX deposit", async function () {
             // just short by 1
             await blxToken.transfer(blxPresale.address, 10000000 * 1e6 + 1000000 * 1e6 - 1);
-            await expect(blxPresale.start())
-                .to.be.revertedWith("PRESALE:NEED_BLX");
+            // presale don't need to have BLX deposited
+            // await expect(blxPresale.start())
+            //     .to.be.revertedWith("PRESALE:NEED_BLX");
             await blxToken.transfer(blxPresale.address, 1);
             // enough for presale
             await blxPresale.start();
+            await increaseTime(1000);
 
             // short by 1 for ibco
             await blxToken.transfer(ibco.address, 30000000 * 1e6 - 1);
@@ -1285,6 +1309,8 @@ describe('IBCO sale', function () {
 
         it('cannot return BLX once started', async function () {
             let amount = 20000 * 1e6;
+            // rewards
+            await blxToken.transfer(blxPresale.address, HARD_CAP * 3 / 10);
             await startSale();
 
             //return BLX(should fail)
