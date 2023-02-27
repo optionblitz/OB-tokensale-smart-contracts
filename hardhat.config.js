@@ -19,7 +19,7 @@ const blxPriceAddresses = {
   mainnet: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
 };
 
-const { ETHERSCAN_APIKEY, GOERLI_WALLET, MAINNET_WALLET, INFURA_KEY } = process.env;
+const { ETHERSCAN_APIKEY, GOERLI_WALLET, MAINNET_WALLET, INFURA_KEY, ALCHEMY_GOERLI_KEY, ALCHEMY_MAINNET_KEY } = process.env;
 
 const openzeppelinProxy = (network) => {
   console.log(`get proxies on ${network}`);
@@ -215,11 +215,11 @@ module.exports = {
       //accounts: [`${PRIVATE_KEY}`] 
     },
     mainnet: {
-      url: `https://mainnet.infura.io/v3/${INFURA_KEY}`,
+      url: `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_MAINNET_KEY}`,
       accounts: [MAINNET_WALLET],
     },
     goerli: {
-      url: `https://goerli.infura.io/v3/${INFURA_KEY}`,
+      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_GOERLI_KEY}`,
       accounts: [GOERLI_WALLET],
     }
   },
