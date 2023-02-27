@@ -115,6 +115,8 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
         require(_presaleAddress != address(0), "IBCO:PRESALE_ADDRESS_ZERO");
         require(_daoAgentAddress != address(0), "IBCO:DAO_AGENT_ADDRESS_ZERO");
         require(_daoAddress != address(0), "IBCO:DAO_ADDRESS_ZERO");
+        require(_start > 0, "IBCO:NEED_START_TIME");
+        require(_duration > 0, "IBCO:NEED_DURATION");
         require(amountFromWhitelisted == 0,"IBCO:ALREADY_STARTED");
         presale = IBlxPresale(_presaleAddress);
         daoAgentAddress = _daoAgentAddress;
@@ -123,6 +125,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
         softCap = _softCap;
         hardCap = _hardCap;
         ibcoStart = _start;
+        ibcoEnd = _start + _duration;
     }
 
     /// @dev calculates BLX price based on distributed tokens amount
@@ -215,7 +218,9 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
         //require(presale.presaleSoftCapStatus(), "IBCO:PRESALE_SOFT_CAP_NOT_REACHED");
         //this? FIXME
         //require(presale.presaleClosed(),"IBCO:PRESALE_NOT_CLOSED");
-        require(ibcoEnd == 0, "IBCO:ALREADY_STARTED");
+        require(amountFromWhitelisted == 0 && !ibcoActive, "IBCO:ALREADY_STARTED");
+        require(duration > 0, "IBCO:NOT_CONFIG");
+        require(block.timestamp < ibcoEnd, "IBCO:IBCO_CLOSED");
         uint presaleBlxBal = BLX.balanceOf(address(presale));
         uint presaleBlxObligation = presale.blxObligation();
         uint chainid = block.chainid;
@@ -225,8 +230,6 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
         require(presaleBlxBal >= hardCap * 3 / 10  + presaleBlxObligation || !(chainid == 1 || chainid == 31337), "IBCO:NEED_REWARD_BLX");
 
         ibcoActive = true;
-        // use actual block timestamp(ibcoStart is for indicative purpose before start)
-        ibcoEnd = block.timestamp + duration;
         emit IBCOStart(ibcoEnd, duration, softCap, hardCap);
     }
     /// @dev set minimum amount USDC to enter sale
@@ -248,7 +251,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
     /// @dev return BLX
     /// only if not started, in cases there need to be logic revision BETFORE start(and BLX already deposited)
     function returnBLX() external onlyTrustedCaller {
-        require(ibcoEnd == 0, "IBCO:ALREADY_START");
+        require(amountFromWhitelisted == 0 && block.timestamp < ibcoStart, "IBCO:ALREADY_START");
         BLX.transfer(presale.daoAgentAddress(), BLX.balanceOf(address(this)));
     }
     
@@ -270,8 +273,8 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
     /// @dev receive USDC from users
     /// @param blxAmount BLX amount
     function _enterIbco(uint blxAmount, uint maxUsdc, address referrer, address msgSender, bool collectFee) private {
-        require(ibcoEnd > 0, "IBCO:IBCO_NOT_STARTED");
-        require(ibcoActive, "IBCO:IBCO_CLOSED");
+        require(block.timestamp >= ibcoStart, "IBCO:IBCO_NOT_STARTED");
+        require(ibcoActive, hardCapReached ? "IBCO:IBCO_CLOSED" : "IBCO:IBCO_NOT_STARTED");
         require(block.timestamp < ibcoEnd, "IBCO:IBCO_CLOSED");
         blxAmount = (blxAmount/TO_WEI)*TO_WEI;
         //get BLX price
@@ -324,6 +327,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
 
     /// @dev allows to claim BLX for whitelisted users
     function claim() external {
+        require(block.timestamp >= ibcoStart, "IBCO:NOT_STARTED");
         // don't allow even sold out earlier still wait until end
         require(block.timestamp >= ibcoEnd && ibcoEnd > 0, "IBCO:SALE_IN_PROGRESS");
         require(softCapReached, "IBCO:TOTAL_AMOUNT_BELOW_SOFT_CAP");
@@ -358,8 +362,8 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
     
     /// @dev allows to refund USDC for everyone if conditions are met
     function refund() external {
-        require(ibcoEnd > 0, "IBCO:SALE_NOT_STARTED");
-        require(block.timestamp >= ibcoEnd,"IBCO:SALE_IN_PROGRESS");
+        require(block.timestamp >= ibcoStart, "IBCO:SALE_NOT_STARTED");
+        require((block.timestamp >= ibcoEnd && ibcoEnd > 0),"IBCO:SALE_IN_PROGRESS");
         address msgSender = _msgSender();
         require(!collaterals[msgSender].redeemed, "IBCO:ALREADY_REDEEMED");
         bool hasPresaleRefund;
@@ -403,6 +407,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
 
     /// @dev transfer all funds received from whitelisted to DAO agent
     function transferToDaoAgent() external onlyTrustedCaller {
+        require(block.timestamp >= ibcoStart, "IBCO:IBCO_NOT_STARTED");
         require(
             (block.timestamp >= ibcoEnd && ibcoEnd > 0) || hardCapReached,
             "IBCO:SALE_IN_PROGRESS"
@@ -439,6 +444,7 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
 
     /// @dev burn unsold BLX(not including rewards)
     function burnUnsoldBLX() external {
+        require(block.timestamp >= ibcoStart, "IBCO:IBCO_NOT_STARTED");
         // speed up burning before the 90 days where rewards would also be burnt
         require(
             (block.timestamp >= ibcoEnd && ibcoEnd > 0) || hardCapReached,
@@ -477,6 +483,10 @@ contract IBCO is IIBCO, ERC2771Context, AccessContract, Initializable {
     /// @dev closed
     function closed() external view returns (bool status) {
         return (block.timestamp >= ibcoEnd && ibcoEnd > 0) || hardCapReached;
+    }
+    /// @dev started
+    function started() external view returns (bool status) {
+        return (block.timestamp >= ibcoStart && ibcoEnd > 0 && (ibcoActive || hardCapReached || block.timestamp >= ibcoEnd));
     }
 
     /// @dev soft cap reached(no refund)
