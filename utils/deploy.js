@@ -9,15 +9,16 @@ const ZERO_ADDRESS = '0x' + '0'.repeat(40);
 
 const saleConfig = {
   9413: {
-    PRESALE_START: Date.parse("2023-02-28T00:00:00Z"),
-    PRESALE_END: 60 * 60 * 24 * 14, //14 days
+//    PRESALE_START: Math.round(Date.parse("2023-02-26T10:00:00Z") / 1000),
+    PRESALE_START: Math.round(Date.now() / 1000),
+    PRESALE_END: 60 * 60 * 24 * 28, //28 days
     ADD_TIME: 60 * 60 * 24 * 30,//30 days
-    IBCO_START: Date.parse("2023-03-31T00:00:00Z"),
+    IBCO_START: Math.round(Date.parse("2023-07-31T00:00:00Z") / 1000),
     IBCO_END: 60 * 60 * 24 * 28,//28 days
-    SOFT_CAP_PRESALE: 2000 * 1e6,// 2,000 USDC
-    HARD_CAP_PRESALE: 10000 * 1e6, //10,000 USDC
-    SOFT_CAP: 10000 * 1e6, //10,000 USDC
-    HARD_CAP: 100000 * 1e6, //100,000 USDC
+    SOFT_CAP_PRESALE: 200000 * 1e6,// 2,000 USDC
+    HARD_CAP_PRESALE: 1000000 * 1e6, //10,000 USDC
+    SOFT_CAP: 1000000 * 1e6, //1,000,000 USDC
+    HARD_CAP: 10000000 * 1e6, //10,000,000 USDC
     MIN_AMOUNT_PRESALE: 100 * 1e6, //100 USDC
     MIN_AMOUNT_IBCO: 100 * 1e6, //1 USDC
     operator: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac", // for starting sale
@@ -26,26 +27,10 @@ const saleConfig = {
 
   },
   5: {
-    PRESALE_START: Date.parse("2023-02-28T00:00:00Z"),
-    PRESALE_END: 60 * 60 * 24 * 14, //14 days
+    PRESALE_START: Math.round(Date.parse("2023-02-28T10:00:00Z") / 1000),
+    PRESALE_END: 60 * 60 * 24 * 28, //28 days
     ADD_TIME: 60 * 60 * 24 * 30,//30 days
-    IBCO_START: Date.parse("2023-07-31T00:00:00Z"),
-    IBCO_END: 60 * 60 * 24 * 28,//28 days
-    SOFT_CAP_PRESALE: 200000 * 1e6,//200,000 USDC
-    HARD_CAP_PRESALE: 1000000 * 1e6, //1,000,000 USDC
-    SOFT_CAP: 1000000 * 1e6, //1,000,000 USDC
-    HARD_CAP: 10000000 * 1e6, //10,000,000 USDC
-    MIN_AMOUNT_PRESALE: 1000 * 1e6, //1000 USDC
-    MIN_AMOUNT_IBCO: 1000 * 1e6, //1000 USDC
-    operator: "0x1dF5730cD1Bf6964533C0876ae0927E0F72bF97D", // for starting sale
-    dao: "0x1dF5730cD1Bf6964533C0876ae0927E0F72bF97D", // what for ?
-    daoAgent: "0x1dF5730cD1Bf6964533C0876ae0927E0F72bF97D", // received the tokens of USDC/BLX
-  },
-  1: {
-    PRESALE_START: Date.parse("2023-02-28T00:00:00Z"),
-    PRESALE_END: 60 * 60 * 24 * 14, //14 days
-    ADD_TIME: 60 * 60 * 24 * 30,//30 days
-    IBCO_START: Date.parse("2023-03-31T00:00:00Z"),
+    IBCO_START: Math.round(Date.parse("2023-07-31T00:00:00Z") / 1000),
     IBCO_END: 60 * 60 * 24 * 28,//28 days
     SOFT_CAP_PRESALE: 200000 * 1e6,//200,000 USDC
     HARD_CAP_PRESALE: 1000000 * 1e6, //1,000,000 USDC
@@ -54,31 +39,94 @@ const saleConfig = {
     MIN_AMOUNT_PRESALE: 1000 * 1e6, //1000 USDC
     MIN_AMOUNT_IBCO: 1000 * 1e6, //1000 USDC
     operator: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac", // for starting sale
-    dao: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac", // what for ?
-    daoAgent: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac", // received the tokens of USDC/BLX
+    dao: "0x1dF5730cD1Bf6964533C0876ae0927E0F72bF97D", // what for ?
+    daoAgent: "0x1dF5730cD1Bf6964533C0876ae0927E0F72bF97D", // received the tokens of USDC/BLX
+  },
+  1: {
+    PRESALE_START: Math.round(Date.parse("2023-02-28T10:00:00Z") / 1000),
+    PRESALE_END: 60 * 60 * 24 * 28, //28 days
+    ADD_TIME: 60 * 60 * 24 * 30,//30 days
+    IBCO_START: Math.round(Date.parse("2023-07-31T00:00:00Z") / 1000),
+    IBCO_END: 60 * 60 * 24 * 28,//28 days
+    SOFT_CAP_PRESALE: 200000 * 1e6,//200,000 USDC
+    HARD_CAP_PRESALE: 1000000 * 1e6, //1,000,000 USDC
+    SOFT_CAP: 1000000 * 1e6, //1,000,000 USDC
+    HARD_CAP: 10000000 * 1e6, //10,000,000 USDC
+    MIN_AMOUNT_PRESALE: 1000 * 1e6, //1000 USDC
+    MIN_AMOUNT_IBCO: 1000 * 1e6, //1000 USDC
+    operator: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac", // for starting sale
+    dao: "0xc5Da6D61715240BC7f1981472Ed913F883B48959", // what for ?
+    daoAgent: "0xc5Da6D61715240BC7f1981472Ed913F883B48959", // received the tokens of USDC/BLX
   }
 }
 
 const vestingConfig = {
   9413: [
     {
-    walletAddress: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac",
-    amount: 12500000 * 1e6,
-  }],
-  5:[],
-  1:[],
+      walletAddress: "0x0C5d63b41C93Fbd1c4630B99419e01144aE3ed06",
+      amount: 12500000 * 1e6,
+    },
+    {
+      walletAddress: "0xC005aefaBa615cED43d04a2b9950D226B3Ea4ee9",
+      amount: 6250000 * 1e6,
+    },
+    {
+      walletAddress: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac",
+      amount: 6250000 * 1e6,
+    },
+  ],
+  5: [
+    {
+      walletAddress: "0x0C5d63b41C93Fbd1c4630B99419e01144aE3ed06",
+      amount: 12500000 * 1e6,
+    },
+    {
+      walletAddress: "0xC005aefaBa615cED43d04a2b9950D226B3Ea4ee9",
+      amount: 6250000 * 1e6,
+    },
+    {
+      walletAddress: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac",
+      amount: 6250000 * 1e6,
+    },
+
+  ],
+  1: [
+    {
+      walletAddress: "0x0C5d63b41C93Fbd1c4630B99419e01144aE3ed06",
+      amount: 12500000 * 1e6,
+    },
+    {
+      walletAddress: "0xC005aefaBa615cED43d04a2b9950D226B3Ea4ee9",
+      amount: 6250000 * 1e6,
+    },
+    {
+      walletAddress: "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac",
+      amount: 6250000 * 1e6,
+    },
+  ],
 }
 
+
+
 const tokenVestingFactoryAddresses = {
-  9413: "0xcDAAff704207c964aF8bc9F3e11AC33472374B0A",
+  9413: "0x49dDe6b70163E7487F55A980448482994682e046",
   5: "0x1b4a039C1681aA2F9B22A0F487D8beBBc2B9099F",
 }
 
 const tokenVestingAddresses = {
-//  9413: "0xcDAAff704207c964aF8bc9F3e11AC33472374B0A",
+  9413: "0xdE1Ae0a74D9E8799F4A2F6A8C366ddcE8EaC1BFD",
   5: "0xfE29cBECBC3f8CE5707eC078Da8fD5ee7E6e12A3",
 }
 
+const tokeSaleAddresses = {
+//  1: "0x9d6fDc67dCf4daE4F12D98250C05DB2cD30b455F",
+}
+const blxPresaleAddresses = {
+//  1: "0x40B5b20F07574Fa6425698e13fe5F996d5A2D362",
+}
+const ibcoAddresses = {
+
+}
 // initial owner of BLX, l1
 const BlxOwner = {
   1: constants.AddressZero,
@@ -132,7 +180,7 @@ const affiliateAddresses = {
 const l1blxTokenAddresses = {
   1: "0x0502F0fd4Be7854b5749328f7e3DD013B94e858E",
   5: "0x0502F0fd4Be7854b5749328f7e3DD013B94e858E",
-//  9413: "0xa2FEf2361d6a3580F282ca4E9eeF3BbbB25B061c",
+  //  9413: "0xa2FEf2361d6a3580F282ca4E9eeF3BbbB25B061c",
 }
 
 // gasless transaction forwarder(biconomy)
@@ -268,14 +316,14 @@ const deployL1Contracts = async (
     });
 
     const usdcHolderAddress = "0x4C55A78879D9C410B62Db37916e5627C6595C3Ac";
-    await (await USDC.configureMinter(deployer.address, BigNumber.from("1000" + "000000" + "000000" +"000000"), {
+    await (await USDC.configureMinter(deployer.address, BigNumber.from("1000" + "000000" + "000000" + "000000"), {
 
     })).wait();
 
-    await (await USDC.configureMinter(usdcHolderAddress, BigNumber.from("1000" + "000000" + "000000" +"000000"), {
+    await (await USDC.configureMinter(usdcHolderAddress, BigNumber.from("1000" + "000000" + "000000" + "000000"), {
 
     })).wait();
-    await (await USDC.mint(usdcHolderAddress, BigNumber.from("1000" + "000000" + "000000" +"000000"), {
+    await (await USDC.mint(usdcHolderAddress, BigNumber.from("1000" + "000000" + "000000" + "000000"), {
       ...overrides
     })).wait();
   }
@@ -298,67 +346,78 @@ const deployL1Contracts = async (
     });
 
   // token sales related, should be on L1 only(separate script needed for real deployment)  
-  const TokenSale = await deployContract(deployer, getContractFactory, "TokenSale", Forwarder.address, USDC.address, {
-    ...overrides
-  });
+  const TokenSale = tokeSaleAddresses[chainId]
+    ? await connectContract(deployer, getContractFactory, "TokenSale", tokeSaleAddresses[chainId])
+    : await deployContract(deployer, getContractFactory, "TokenSale", Forwarder.address, USDC.address, {
+      ...overrides
+    });
 
-  const BlxPresale = await deployContract(deployer, getContractFactory, "BlxPresale", Forwarder.address, USDC.address, BlxToken.address, TokenSale.address, {
-    ...overrides
-  });
+  const BlxPresale = blxPresaleAddresses[chainId]
+    ? await connectContract(deployer, getContractFactory, "BlxPresale", blxPresaleAddresses[chainId])
+    : await deployContract(deployer, getContractFactory, "BlxPresale", Forwarder.address, USDC.address, BlxToken.address, TokenSale.address, {
+      ...overrides
+    });
 
-  const IBCO = await deployContract(deployer, getContractFactory, "IBCO", Forwarder.address, USDC.address, BlxToken.address, TokenSale.address, {
-    ...overrides
-  });
+  const IBCO = ibcoAddresses[chainId]
+    ? await connectContract(deployer, getContractFactory, "IBCO", ibcoAddresses[chainId])
+    : await deployContract(deployer, getContractFactory, "IBCO", Forwarder.address, USDC.address, BlxToken.address, TokenSale.address, {
+      ...overrides
+    });
 
   const TokenVesting = tokenVestingAddresses[chainId]
     ? await connectContract(deployer, getContractFactory, "TokenVesting", tokenVestingAddresses[chainId])
     : await deployContract(deployer, getContractFactory, "TokenVesting", BlxToken.address, {
-    ...overrides
-  });
+      ...overrides
+    });
 
   const TokenVestingFactory = tokenVestingFactoryAddresses[chainId]
     ? await connectContract(deployer, getContractFactory, "TokenVestingFactory", tokenVestingFactoryAddresses[chainId])
     : await deployContract(deployer, getContractFactory, "TokenVestingFactory", TokenVesting.address, {
-    ...overrides
-  });
+      ...overrides
+    });
 
-  const vestingWallets = await Promise.all(vestingConfig[chainId].map(async ({walletAddress, amount}) => {
-    const tx = await TokenVestingFactory.createLockBox(BlxToken.address, constants.AddressZero);    
+  const lockBoxAddresses = {};
+  const vestingWallets = [];
+  const tokenVesting = await getContractFactory("TokenVesting", deployer);
+  for (let index = 0; chainId === 9413 && index < vestingConfig[chainId].length; index++) {
+    const { walletAddress, amount } = vestingConfig[chainId][index];
+    const tx = await TokenVestingFactory.createLockBox(BlxToken.address, constants.AddressZero);
     console.log(`creating lockBox for ${walletAddress} ${tx.hash} `);
     const txResult = await tx.wait();
     console.log(`gas used ${txResult.gasUsed.toNumber()}`);
     // for private testing lock one day
     const skew = 60; // slightly more
     const lockTime = 0 + skew; // lock 500s more due to timestamp issue
-    const startTime = chainId == 9413 ? (Math.round(Date.now()/1000) + 60*60*24) : Date.parse("2023-3-31T00:00:00Z") + lockTime;
-    const sliceSeconds = chainId == 9413 ? 60*60*24 : (chainId === 5 ? 60 * 60 * 24 * 5 : 60 * 60 * 24 * 365); // testing duration 3 days, actual 3 years
-    const lockedAmount = 12500000 * 1e6 * 3 / 4; // 3/4 locked for 3 years
+    const startTime = chainId == 9413 ? (Math.round(Date.now() / 1000) + 60 * 60 * 24) : Math.round(Date.parse("2023-03-31T00:00:00Z") / 1000) + lockTime;
+    const sliceSeconds = chainId == 9413 ? 60 * 60 * 24 : (chainId === 5 ? 60 * 60 * 24 * 5 : 60 * 60 * 24 * 365); // testing duration 4 days, goerli 20 days, actual 4 years
+    const lockedAmount = amount;
 
     const cliff = 0;
-    const releaseDuration = 3 * sliceSeconds; // 3 years schedule
-    const secondsPerSlice = sliceSeconds; // 1/3 each year
-    //const amount = 12500000* 1000000;
+    const releaseDuration = 4 * sliceSeconds; // 4 years schedule
+    const secondsPerSlice = sliceSeconds; // 1/4 each year
     let lockBoxAddress;
     for (const event of txResult.events) {
-      const { event:evt, args } = event;
+      const { event: evt, args } = event;
       if (evt && evt.toString()) {
         const { owner, lockBox } = args;
         lockBoxAddress = lockBox.toString();
         console.log(`Event ${evt} with args ${owner} ${lockBoxAddress}`);
-        const vestingContract = TokenVesting.attach(lockBoxAddress.toString());
+        const vestingContract = tokenVesting.attach(lockBoxAddress.toString());
+        console.log(startTime, cliff, releaseDuration, secondsPerSlice, lockedAmount);
         if (walletAddress) {
           await vestingContract.createVestingSchedule(walletAddress, startTime, cliff, releaseDuration, secondsPerSlice, false, lockedAmount);
-          if (chainId == 9413) {
-            await BlxToken.transfer(lockBoxAddress, BigNumber.from(lockedAmount)); 
-          }
+          // if (chainId == 9413) {
+          //   await BlxToken.transfer(lockBoxAddress, BigNumber.from(lockedAmount));
+          // }
           await vestingContract.transferOwnership(walletAddress);
         }
       }
     }
-    return await connectContract(deployer, getContractFactory, "TokenVesting", lockBoxAddress);
-  }));
-
-  const VestingContracts = vestingWallets.reduce((a, w, i)=> ({...a, ["TokenVesting" + (i+1)]: w}),{});
+    lockBoxAddresses[walletAddress] = lockBoxAddress;
+    vestingWallets.push(await connectContract(deployer, getContractFactory, "TokenVesting", lockBoxAddress));
+  }
+  console.log(lockBoxAddresses);
+  const VestingContracts = vestingWallets.reduce((a, w, i) => ({ ...a, ["TokenVesting" + (i + 1)]: w }), {});
 
   const {
     PRESALE_END,
@@ -395,15 +454,18 @@ const deployL1Contracts = async (
   (await BlxPresale.config(daoAgent, IBCO.address, PRESALE_END, ADD_TIME, SOFT_CAP_PRESALE, HARD_CAP_PRESALE, PRESALE_START));
   (await BlxPresale.setMinAmount(MIN_AMOUNT_PRESALE));
   (await BlxPresale.setTxCost(TX_FEE));
-  console.log(`configuring IBCO ${IBCO.address}`);
-  (await (await IBCO.config(BlxPresale.address, daoAgent, dao, IBCO_END, SOFT_CAP, HARD_CAP, IBCO_START)));
-  (await IBCO.setMinAmount(MIN_AMOUNT_IBCO));
-  (await IBCO.setTxCost(TX_FEE));
+  (await BlxPresale.start());
+  if (chainId === 9413 && false) {
+    console.log(`configuring IBCO ${IBCO.address}`);
+    (await (await IBCO.config(BlxPresale.address, daoAgent, dao, IBCO_END, SOFT_CAP, HARD_CAP, IBCO_START)));
+    (await IBCO.setMinAmount(MIN_AMOUNT_IBCO));
+    (await IBCO.setTxCost(TX_FEE));
+  }
 
-  if (chainId == 9413) {  
+  if (chainId == 9413) {
     console.log(`setup presale blx pool ${BLX_REWARDS + BLX_PRESALE}`);
     await BlxToken.transfer(BlxPresale.address, BLX_PRESALE + BLX_REWARDS);
-  
+
     console.log(`setup ibco blx pool  ${BLX_IBCO}`);
     await BlxToken.transfer(IBCO.address, BLX_IBCO);
 
@@ -427,7 +489,7 @@ const deployL1Contracts = async (
     {
       ...{
         USDC, BlxToken,
-        Multicall, Multicall2, Forwarder, BlxPresale, IBCO, TokenSale, 
+        Multicall, Multicall2, Forwarder, BlxPresale, IBCO, TokenSale,
         TokenVesting, TokenVestingFactory,
         ...VestingContracts,
         // aux separate deploy

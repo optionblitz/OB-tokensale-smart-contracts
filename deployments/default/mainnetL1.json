@@ -1,0 +1,19 @@
+{
+  "chainId": 1,
+  "deploymentDate": 1677514878718,
+  "startBlock": 16720685,
+  "totalGasUsed": 11679184,
+  "addresses": {
+    "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "BlxToken": "0x0502F0fd4Be7854b5749328f7e3DD013B94e858E",
+    "Multicall": "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
+    "Multicall2": "0x5ba1e12693dc8f9c48aad8770482f4739beed696",
+    "Forwarder": "0x84a0856b038eaAd1cC7E297cF34A7e72685A8693",
+    "BlxPresale": "0x780d1EB190531D4b496D9Ba009E514483742B793",
+    "IBCO": "0xd6e4D05F6497e0eEf463650F529D7f4B6EA94C38",
+    "TokenSale": "0x902C6E6F17FA2Fb30CFf17a4AEd4010070361dF0",
+    "TokenVesting": "0x9960e59f0296e1a632000CfcCD4Bf8c097400332",
+    "TokenVestingFactory": "0xC9395832EeB85312Eb929dFE2Ccd985cB28ae801"
+  },
+  "network": "mainnet"
+}
