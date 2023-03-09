@@ -62,7 +62,7 @@ describe('Token Vesting', function () {
                     //console.log(`Event ${evt} with args ${owner} ${lockBoxAddress}`);
                     const vestingContract = TokenVesting.attach(lockBoxAddress.toString());
                     if (walletAddress) {
-                        await vestingContract.createVestingSchedule(walletAddress, startTime, cliff, releaseDuration, secondsPerSlice, false, amount);
+                        await (await vestingContract.createVestingSchedule(walletAddress, startTime, cliff, releaseDuration, secondsPerSlice, false, amount)).wait();
                         await usdToken.transfer(lockBoxAddress, ethers.BigNumber.from(amount));
                         await vestingContract.transferOwnership(walletAddress);
                     }
@@ -77,6 +77,15 @@ describe('Token Vesting', function () {
         const lockTime = 0 + skew; // lock 500s more due to timestamp issue
         const sliceSeconds = 60 * 60 * 24 * 365;
         const lockedAmount = 12500000 * 1e6;
+
+        it('cannot create more than one schedule', async function () {
+            for (i = 1; i < 2; i++) {
+                const lockBox = await createLockBox(accounts[i].address, lockTime, lockedAmount);
+                await expect(lockBox.connect(accounts[i]).createVestingSchedule(accounts[i].address, Math.round(Date.now() / 1000), 0, 1, 1, false, lockedAmount))
+                    .to.be.revertedWith("TokenVesting: only one schedule is allowed");
+            }
+        });
+
         it('Locked and not releasable (failed during first locked period)', async function () {
             let lockBoxes= [];
             for (i = 1; i < 5; i++) {

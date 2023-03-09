@@ -1,20 +1,19 @@
 {
   "chainId": 9413,
-  "deploymentDate": 1676996402583,
-  "startBlock": 15570,
-  "totalGasUsed": 11994722,
+  "deploymentDate": 1677511718581,
+  "startBlock": 15987,
+  "totalGasUsed": 10670116,
   "addresses": {
     "USDC": "0x8B3CA29C10a33700A87fe935315DEB2b60f33DC3",
-    "BlxToken": "0xa5CE1c3196297d085e84e69014BDA543Ef121E2E",
+    "BlxToken": "0xE9b99AE4af5704cf5804846BD4C10c635011C5de",
     "Multicall": "0xf17968c6f83E800446d1e90703feDA7191745DEa",
     "Multicall2": "0xDb96763408fDB533Ab02a615C508B15e326255fA",
     "Forwarder": "0x8474c0A047ad6a336df1D8c4234e06Cd324D9246",
-    "BlxPresale": "0xCCA9FC12fa245dA3612e5c36d334D2d776A1B281",
-    "IBCO": "0xD50aDc459bc83Eb855Edbb5e64e2f0d6c305a0Ec",
-    "TokenSale": "0x6aa567A214AA324198faF83181584647DF997de4",
-    "TokenVesting": "0xCE9570cbAEb6EeeFb0FB64aB46f46c74D94fe084",
-    "TokenVestingFactory": "0xcDAAff704207c964aF8bc9F3e11AC33472374B0A",
-    "TokenVesting1": "0xe29996FEe5D80a101D3Fa7D55321FB36BD78F11d"
+    "BlxPresale": "0x1b35841F3F5cA74c565db62a03D78a56990bf431",
+    "IBCO": "0x7091A6c8eaa0B14b97a0346bfE5D76788E97d52b",
+    "TokenSale": "0x1C8027365213169f531844Ba2703bc1C43bdFD75",
+    "TokenVesting": "0xdE1Ae0a74D9E8799F4A2F6A8C366ddcE8EaC1BFD",
+    "TokenVestingFactory": "0x49dDe6b70163E7487F55A980448482994682e046"
   },
   "network": "private"
 }
